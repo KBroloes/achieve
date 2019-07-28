@@ -1,0 +1,17 @@
+<head>
+    <title>Achieve! Full Steam.</title>
+</head>
+<body>
+<% if (!user) { %>
+    <h2>Please login through Steam to continue</h2>
+    <div class="row">
+        <div class="col">
+            <p><a href="auth/steam"><img src="/img/sits_01.png"></a></p>
+        </div>
+    </div>
+<% } else { %>
+    <h2>Hello, <%= user.displayName %>. - <a href='logout'>Logout</a></h2>
+
+    <p><a href="main">See Profile Information</a></p>
+<% } %>
+</body>
