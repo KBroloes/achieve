@@ -8,6 +8,21 @@ module.exports = class Steam {
     }
 }
 
+class Game {
+    constructor(json) {
+        this.appId = json.appid
+        this.name = json.name
+        this.image = constructGameImgUrl(this.appId, json.img_logo_url)
+        this.playtime_total = json.playtime_forever
+        this.playtime_recent = json.playtime_2weeks || 0
+        this.last_updated = new Date().getTime() // Use moment instead
+    }
+}
+
+const constructGameImgUrl = (appId, imgHash) => {
+    return `https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/${appId}/${imgHash}.jpg`
+}
+
 const constructSteamUrL = (apiKey, interface, method, version, params) => {
     url = `http://api.steampowered.com/${interface}/${method}/v${version}/?key=${apiKey}`
     for (var key in params) {
@@ -27,14 +42,15 @@ class Player {
         const method = "GetOwnedGames"
         const params = { steamid, include_appinfo, include_played_free_games }
         const url = constructSteamUrL(this._apiKey, this._interface, method, this._version, params)
-
+        console.log(url)
         try {
             const response = await axios.get(url)
-            console.log(response)
             switch(response.status) {
                 case 200:
                 case 302:
-                    return response.data.response
+                    const games = response.data.response.games
+                    const Games = games.map(g => new Game(g))
+                    return { game_count: response.data.response.game_count, games: Games.slice(0,10) }
                 case 400:
                 case 500:
                     console.error(response.data)

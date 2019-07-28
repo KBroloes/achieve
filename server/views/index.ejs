@@ -1,17 +1,26 @@
 <head>
     <title>Achieve! Full Steam.</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"></style>
 </head>
 <body>
-<% if (!user) { %>
-    <h2>Please login through Steam to continue</h2>
+    <% if (user) { %>
+    <header class="navbar navbar-dark bg-dark sticky-top">
+        <a class="navbar-brand" href="/">
+            <img src="<%= user.avatar %>" width="30" height="30" class="d-inline-block align-top" alt='Your Avatar Image'>
+            <%= user.displayName %>
+        </a>
+        <a href='logout' class="pull-right">Logout</a>
+    </header>
+    <p><a href="main">See Profile Information</a></p>
+    <% } else { %>
+    <header class="navbar navbar-dark bg-dark sticky-top"></header>
+        Please log in through steam to continue
+    </header>
     <div class="row">
         <div class="col">
             <p><a href="auth/steam"><img src="/img/sits_01.png"></a></p>
         </div>
     </div>
-<% } else { %>
-    <h2>Hello, <%= user.displayName %>. - <a href='logout'>Logout</a></h2>
+    <% } %>
 
-    <p><a href="main">See Profile Information</a></p>
-<% } %>
 </body>

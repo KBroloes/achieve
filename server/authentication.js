@@ -34,7 +34,9 @@ function configure_authentication(app) {
             id: profile.id,
             displayName: profile.displayName,
             country: user.loccountrycode,
-            avatar: user.avatarfull,
+            avatar: user.avatar,
+            avatarmedium: user.avatarmedium,
+            avatarfull: user.avatarfull,
             profileurl: user.profileurl,
             realname: user.realname
         }
