@@ -31,5 +31,10 @@ app.get('/main', auth.ensure, (req, res) =>  {
     .catch(err => res.status(500).send(err))
 })
 
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+  });
+
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
