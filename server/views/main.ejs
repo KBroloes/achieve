@@ -5,4 +5,11 @@
     <p><img src='<%= user.avatar %>' alt='Your Avatar Image' /></p>
     <p>ID: <%= user.id %></p>
     <p>Name: <%= user.displayName %></p>
+
+    <p>Game count: <%= games.game_count %></p>
+    <ul>
+        <% for (var id in games.games) { %>
+        <li><%= games.games[id].name %></li>
+        <% } %>
+    </ul>
 </body>
