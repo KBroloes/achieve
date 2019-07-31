@@ -25,9 +25,23 @@ app.get('/', (req, res) =>  {
 
 app.get('/main', auth.ensure, (req, res) =>  {
     steam.Player.GetOwnedGames(req.user.id)
-    .then( (owned_games) =>
+    .then( async (owned_games) => {
+        try {
+            await Promise.all(
+                owned_games.games.map(async game => {
+                    try {
+                        const achievement = await steam.User.GetUserStatsForGame(req.user.id, game.appId)
+                        game.addAchievements(achievement)
+                    } catch (err) {
+                        console.error("[Router]", err)
+                    }
+                })
+            )
+        } catch (err) {
+            console.error("[Router]", err)
+        }
         res.render('main', { user: req.user, games: owned_games })
-    )
+    })
     .catch(err => res.status(500).send(err))
 })
 

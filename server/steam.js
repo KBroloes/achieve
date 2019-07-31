@@ -16,19 +16,30 @@ class Game {
         this.playtime_total = json.playtime_forever
         this.playtime_recent = json.playtime_2weeks || 0
         this.last_updated = new Date().getTime() // Use moment instead
+        this.achievements = []
+        this.achievements_completed = 0
+        this.completion_score = 100
     }
-}
 
-const constructGameImgUrl = (appId, imgHash) => {
-    return `https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/${appId}/${imgHash}.jpg`
-}
+    addAchievements(statsjson) {
+        this.achievements = statsjson.playerstats.achievements
+        if(this.achievements.length > 0) {
+            this.achievements_completed = this.achievements.reduce((memo, a) => {
+                if(a.achieved == 1){
+                    memo += 1
+                }
+                return memo
+            }, 0)
+            this.completion_score = (this.achievements_completed / this.achievements.length * 100).toFixed(0)
+        } else {
+            this.achievements_completed = 0
+            this.completion_score = 100
+        }
 
-const constructSteamUrL = (apiKey, interface, method, version, params) => {
-    url = `http://api.steampowered.com/${interface}/${method}/v${version}/?key=${apiKey}`
-    for (var key in params) {
-        url = url + `&${key}=${params[key]}`
+        if(statsjson.playerstats.gameName !== this.name) {
+            console.warn(`Added achievements for another game. Expected: ${this.name}, but got ${statsjson.playerstats.gameName}`)
+        }
     }
-    return url
 }
 
 class Player {
@@ -44,23 +55,12 @@ class Player {
         const url = constructSteamUrL(this._apiKey, this._interface, method, this._version, params)
         console.log(url)
         try {
-            const response = await axios.get(url)
-            switch(response.status) {
-                case 200:
-                case 302:
-                    const games = response.data.response.games
-                    const Games = games.map(g => new Game(g))
-                    return { game_count: response.data.response.game_count, games: Games.slice(0,10) }
-                case 400:
-                case 500:
-                    console.error(response.data)
-                    throw new Error("Got status ", response.status)
-                default:
-                    console.warn("Unexpected response", response.data)
-                    throw new Error("Unexpected response", response.data)
-            }
+            const resp = await request(url)
+
+            const Games = resp.response.games.map(g => new Game(g))
+            return { game_count: resp.response.game_count, games: Games.slice(0,10) }
         } catch (err) {
-            console.error(`Failed to request for ${url}, error: ${err}`)
+            console.error(`[Steam] Failed to request for ${url}, ${err}`)
             throw new Error("Request failed")
         }
     }
@@ -73,11 +73,45 @@ class User {
         this._version = "0002"
     }
 
-    GetUserStatsForGame(steamid, gameid) {
-        const method = "GetUserStatsForGame"
+    async GetUserStatsForGame(steamid, appid) {
+        const method = "GetPlayerAchievements"
+        const version = "0001"
+        const params = { steamid, appid }
+        const url = constructSteamUrL(this._apiKey, this._interface, method, version, params)
+        console.log(url)
+        try {
+            const response = await request(url)
+            return response
+        } catch (err) {
+            console.error(`[Steam] Failed to request for ${url}, ${err}`)
+            throw new Error("Request failed")
+        }
     }
 
-    GetGlobalAchievementPercentagesForApp(gameid) {
+    async GetGlobalAchievementPercentagesForApp(gameid) {
         const method = "GetGlobalAchievementPercentagesForApp"
+    }
+}
+
+const constructGameImgUrl = (appId, imgHash) => {
+    return `https://steamcdn-a.akamaihd.net/steamcommunity/public/images/apps/${appId}/${imgHash}.jpg`
+}
+
+const constructSteamUrL = (apiKey, interface, method, version, params) => {
+    url = `http://api.steampowered.com/${interface}/${method}/v${version}/?key=${apiKey}`
+    for (var key in params) {
+        url = url + `&${key}=${params[key]}`
+    }
+    return url
+}
+
+const request = async (url) => {
+    try {
+        const resp = await axios.get(url)
+        return resp.data
+    } catch (resp) {
+        let response = resp.response
+        console.error("[Request]", response.status, response.statusText, response.data)
+        throw new Error(`Request failed with ${response.status}: ${response.statusText}`)
     }
 }

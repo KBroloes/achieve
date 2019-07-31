@@ -39,12 +39,12 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col-8"><%= game.name %></div>
-                                <div class="col-4 text-right">(47%)</div>
+                                <div class="col-4 text-right">(<%= game.completion_score %>%)</div>
                             </div>
                         </div>
                         <img src="<%= game.image %>" class="card-img-top" alt="<%= game.name %> image">
                         <div class="card-body">
-                            <p class="card-text">Achievements - 10/23</p>
+                            <p class="card-text">Achievements - <%= game.achievements_completed %>/<%= game.achievements.length %></p>
                             <a href="#" class="btn btn-primary">Go somewhere</a>
                         </div>
                     </div>
