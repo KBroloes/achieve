@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+  achieve-redis:
+    image: redis:5.0.5-alpine
+    command: redis-server --appendonly yes
+    ports:
+     - 6379:6379
