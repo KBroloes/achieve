@@ -37,6 +37,7 @@ app.get('/main', auth.ensure, (req, res) =>  {
                     }
                 })
             )
+            owned_games.games.sort((x, y) => x.completion_score - y.completion_score)
         } catch (err) {
             console.error("[Router]", err)
         }
