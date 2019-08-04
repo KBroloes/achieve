@@ -7,7 +7,7 @@ const Cache = require('./game_cache')
 const Redis = require('./redis')
 
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 
 const public = express.static('public')
 
