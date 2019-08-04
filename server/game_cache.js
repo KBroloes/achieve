@@ -54,6 +54,7 @@ module.exports = class GameCache {
                         })
                     })
                     cached_games.game_count = userGames.game_count
+                    cached_games.total_completion_score = getCompletionScore(cached_games)
 
                     await this._commitToCache(userId, cached_games)
                 }
@@ -106,11 +107,25 @@ function isStale(update_time) {
 function asFilteredGamesList(gamesObject) {
     // Convert to array for filtering, sorting and representations
     let gamesList = Object.values(gamesObject.games)
-    gamesList = gamesList.filter(game => game.achievements.length)
-    gamesList.sort((x, y) => x.completion_score - y.completion_score)
+    played = gamesList.filter(game => game.achievements.length && game.playtime_total)
+    played.sort((x, y) => x.completion_score - y.completion_score)
 
     const newObj = {...gamesObject}
-    newObj.games = gamesList
+    newObj.games = played
+    newObj.unplayed = gamesList.filter(game => game.achievements.length && !game.playtime_total)
 
     return newObj
+}
+
+function getCompletionScore(gamesObject) {
+    // Only count games with achievements that has been played
+    const filtered = asFilteredGamesList(gamesObject).games
+    const game_count = filtered.length
+
+    // TODO: Add better tests for integer coercion
+    const total = filtered.reduce((reducer, game) => {
+        return reducer + (+game.completion_score)
+    }, 0)
+    const score = (total / game_count).toFixed(0)
+    return score
 }
