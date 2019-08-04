@@ -22,13 +22,12 @@ module.exports = class Game {
                 return memo
             }, 0)
             this.completion_score = (this.achievements_completed / this.achievements.length * 100).toFixed(0)
+            if(statsjson.playerstats.gameName !== this.name) {
+                console.warn(`Added achievements for another game. Expected: ${this.name}, but got ${statsjson.playerstats.gameName}`)
+            }
         } else {
             this.achievements_completed = 0
             this.completion_score = 100
-        }
-
-        if(statsjson.playerstats.gameName !== this.name) {
-            console.warn(`Added achievements for another game. Expected: ${this.name}, but got ${statsjson.playerstats.gameName}`)
         }
     }
 }

@@ -20,7 +20,7 @@ module.exports = class GameCache {
                 return asFilteredGamesList(userGames)
             }
             else {
-                console.debug("Found cache", cached_games)
+                console.debug(`Found cache with ${cached_games.game_count} games`)
                 if(isStale(cached_games.last_updated)) {
                     console.debug("Cache is stale, will update games that have been played")
                     const userGames = await this._fetchOwnedGames(userId)
@@ -36,15 +36,16 @@ module.exports = class GameCache {
                         } else {
                             const cached_game = cached_games.games[key]
                             // Heuristic to update
-                            needsUpdate = cached_game.playtime_total < (fetched_game.playtime_total)
+                            needsUpdate = cached_game.playtime_total < (fetched_game.playtime_total+1)
                         }
 
                         if(needsUpdate) {
-                            console.debug("[Game Cache] Needs update: ", cached_game.name)
+                            console.debug("[Game Cache] Needs update: ", fetched_game.name)
                             gamesToUpdate.push(this._fetchUserStatsForGame(userId, fetched_game))
                         }
                     }
 
+                    console.info(`Updating ${gamesToUpdate.length} games`)
                     await Promise.all(gamesToUpdate).then((games) => {
                         games.forEach((game) => {
                             // Overwrite the cache
@@ -52,7 +53,7 @@ module.exports = class GameCache {
                             console.debug("[Game Cache] Updated game ", game.name)
                         })
                     })
-                    cached_games.game_count = cached_games.games.length
+                    cached_games.game_count = userGames.game_count
 
                     await this._commitToCache(userId, cached_games)
                 }

@@ -20,17 +20,17 @@ class Player {
         const method = "GetOwnedGames"
         const params = { steamid, include_appinfo, include_played_free_games }
         const url = constructSteamUrL(this._apiKey, this._interface, method, this._version, params)
-        console.log(url)
         try {
-            const resp = await request(url)
+            const resp = await axios.get(url)
+            const response = resp.data.response
 
             const gameMap = {}
-            resp.response.games.slice(0,10).forEach((g) => {
+            response.games.slice(0,10).forEach((g) => {
                 let game = new Game(g)
                 gameMap[game.id] = game
             })
 
-            return { game_count: resp.response.game_count, games: gameMap }
+            return { game_count: response.game_count, games: gameMap }
         } catch (err) {
             console.error(`[Steam] Failed to request for ${url}, ${err}`)
             throw new Error("Request failed")
@@ -50,11 +50,15 @@ class User {
         const version = "0001"
         const params = { steamid, appid }
         const url = constructSteamUrL(this._apiKey, this._interface, method, version, params)
-        console.log(url)
         try {
-            const response = await request(url)
-            return response
+            const response = await axios.get(url)
+            return response.data
         } catch (err) {
+            if(err.response.status == 400) {
+                if('playerstats' in err.response.data && err.response.data.playerstats.error == 'Requested app has no stats') {
+                    return {playerstats: { achievements: [] }}
+                }
+            }
             console.error(`[Steam] Failed to request for ${url}, ${err}`)
             throw new Error("Request failed")
         }
@@ -71,15 +75,4 @@ const constructSteamUrL = (apiKey, interface, method, version, params) => {
         url = url + `&${key}=${params[key]}`
     }
     return url
-}
-
-const request = async (url) => {
-    try {
-        const resp = await axios.get(url)
-        return resp.data
-    } catch (resp) {
-        let response = resp.response
-        console.error("[Request]", response.status, response.statusText, response.data)
-        throw new Error(`Request failed with ${response.status}: ${response.statusText}`)
-    }
 }
