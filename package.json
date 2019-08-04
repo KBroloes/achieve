@@ -12,6 +12,7 @@
     "ejs": "^2.6.2",
     "express": "^4.17.1",
     "express-session": "^1.16.2",
+    "moment": "^2.24.0",
     "passport": "^0.4.0",
     "passport-steam": "^1.0.10",
     "redis": "^2.8.0"

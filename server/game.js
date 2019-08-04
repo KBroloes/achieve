@@ -1,3 +1,4 @@
+const moment = require('moment')
 module.exports = class Game {
     constructor(json) {
         this.id = json.appid
@@ -5,7 +6,7 @@ module.exports = class Game {
         this.image = constructGameImgUrl(this.id, json.img_logo_url)
         this.playtime_total = json.playtime_forever
         this.playtime_recent = json.playtime_2weeks || 0
-        this.last_updated = new Date().getTime() // Use moment instead
+        this.last_updated = moment.utc()
         this.achievements = []
         this.achievements_completed = 0
         this.completion_score = 100
