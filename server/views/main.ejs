@@ -8,6 +8,43 @@
         .eq-height div.card-body {
             min-height: 90px;
         }
+
+        input[type='checkbox'].toggle {
+            display: none;
+        }
+
+        .collapse-label {
+            display: block;
+            cursor: pointer;
+        }
+
+        .collapse-label::after {
+            content: ' ';
+            display: inline-block;
+
+            /* Drawing the arrow */
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 5px solid currentColor;
+            vertical-align: middle;
+
+            transition: transform .2s ease-out;
+        }
+
+        .toggle:checked + .collapse-label::after {
+            transform: rotate(90deg) translateX(-3px);
+        }
+
+        .collapsible {
+            max-height: 0px;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            padding-bottom: 0px;
+        }
+
+        .toggle:checked ~ .collapsible {
+            max-height: 300px;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +79,13 @@
                 <h5> Could not calculate full achievement scores and features are limited.</h5>
                 <small> If your games with playtime show up on this list, give permissions to your game playtime for full compatibility.</small>
             <% } %>
+                <input class="toggle" type="checkbox" id="collapse_permissions">
+                <label class="collapse-label" for="collapse_permissions"> read more </label>
+
+                <div class="collapsible">
+                    <p>Go to your Steam profile, then "Edit Profile" > "My Privacy Settings" and ensure your game details are public.</p>
+                    <img width="512" src="/img/privacy_settings.png">
+                </div>
             </div>
         <% } %>
 
