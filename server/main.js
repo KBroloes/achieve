@@ -4,6 +4,7 @@ require('dotenv').config();
 const auth = require('./authentication')
 const session = require('./session')
 const Cache = require('./game_cache')
+const Redis = require('./redis')
 
 const app = express()
 const port = 3000
@@ -14,10 +15,11 @@ const public = express.static('public')
 app.set('views', './server/views')
 app.set('view engine', 'ejs')
 app.use(public)
+const redis_client = new Redis()
 
-session.configure(app)
+const cache = new Cache(redis_client)
+session.configure(app, redis_client.client)
 auth.configure(app)
-const cache = new Cache()
 
 app.get('/', (req, res) =>  {
     res.render('index', { user: req.user })

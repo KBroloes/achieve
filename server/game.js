@@ -1,8 +1,8 @@
 module.exports = class Game {
     constructor(json) {
-        this.appId = json.appid
+        this.id = json.appid
         this.name = json.name
-        this.image = constructGameImgUrl(this.appId, json.img_logo_url)
+        this.image = constructGameImgUrl(this.id, json.img_logo_url)
         this.playtime_total = json.playtime_forever
         this.playtime_recent = json.playtime_2weeks || 0
         this.last_updated = new Date().getTime() // Use moment instead

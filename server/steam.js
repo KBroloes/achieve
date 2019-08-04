@@ -24,8 +24,13 @@ class Player {
         try {
             const resp = await request(url)
 
-            const Games = resp.response.games.map(g => new Game(g))
-            return { game_count: resp.response.game_count, games: Games.slice(0,10) }
+            const gameMap = {}
+            resp.response.games.slice(0,10).forEach((g) => {
+                let game = new Game(g)
+                gameMap[game.id] = game
+            })
+
+            return { game_count: resp.response.game_count, games: gameMap }
         } catch (err) {
             console.error(`[Steam] Failed to request for ${url}, ${err}`)
             throw new Error("Request failed")
