@@ -1,6 +1,14 @@
 <head>
     <title>Achieve! Full Steam.</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css"></style>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"></link>
+    <style>
+        body {
+            background: rgb(195, 195, 195);
+        }
+        .eq-height div.card-body {
+            min-height: 90px;
+        }
+    </style>
 </head>
 <body>
     <!-- Image and text -->
@@ -9,14 +17,15 @@
           <img src="<%= user.avatar %>" width="30" height="30" class="d-inline-block align-top" alt='Your Avatar Image'>
           <%= user.displayName %>
         </a>
+        <h2 class="navbar-brand">Your Achievement score: <%= games.total_completion_score%>%
+            <small>based on <%= games.game_count %> games</small>
+        </h2>
+
         <a href='logout' class="navbar-brand pull-right">Logout</a>
     </header>
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <h2>Your games</h2>
-                <p>Game count: <%= games.game_count %></p>
-                <p>Achievement score: <%= games.total_completion_score%>%</p>
             </div>
         </div>
     </div>
@@ -33,6 +42,7 @@
         <% var gamesList = games.games %>
 
         <% if (gamesList.length == 0) { %>
+            <div class="alert alert-secondary" role="alert">
             <% if(games.unplayed.length == 0) {%>
                 <h4> No games found. Check your permissions </h4>
             <% } else { %>
@@ -41,23 +51,18 @@
                 <h5> Could not calculate full achievement scores and features are limited.</h5>
                 <small> If your games with playtime show up on this list, give permissions to your game playtime for full compatibility.</small>
             <% } %>
+            </div>
         <% } %>
 
-        <div class="row">
+        <div class="row eq-height">
             <% for (var id in gamesList) { %>
             <% var game = gamesList[id] %>
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col-8"><%= game.name %></div>
-                                <div class="col-4 text-right">(<%= game.completion_score %>%)</div>
-                            </div>
-                        </div>
                         <img src="<%= game.image %>" class="card-img-top" alt="<%= game.name %> image">
-                        <div class="card-body">
-                            <p class="card-text">Achievements - <%= game.achievements_completed %>/<%= game.achievements.length %></p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <div class="card-body"><%= game.name %></div>
+                        <div class="card-footer">
+                            <p class="card-text">Achievements - <%= game.achievements_completed %>/<%= game.achievements.length %> <span class="text-right float-right">(<%= game.completion_score %>%)</span></p>
                         </div>
                     </div>
                 </div>
