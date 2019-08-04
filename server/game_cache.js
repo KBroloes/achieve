@@ -106,7 +106,6 @@ module.exports = class GameCache {
 
 function isStale(update_time, hours) {
     let time = hours || 4
-    return true
     let threshold = moment.utc(update_time).add(time, 'hours')
     return threshold.isBefore(moment.utc())
 }
