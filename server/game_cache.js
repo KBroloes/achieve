@@ -14,6 +14,7 @@ module.exports = class GameCache {
                 // First time use case
                 const userGames = await this._fetchOwnedGames(userId)
                 await this._fetchUserStatsForGames(userId, userGames)
+                userGames.total_completion_score = getCompletionScore(userGames)
 
                 await this._commitToCache(userId, userGames)
 
