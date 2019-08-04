@@ -13,8 +13,9 @@ module.exports = class Game {
     }
 
     addAchievements(statsjson) {
-        this.achievements = statsjson.playerstats.achievements
-        if(this.achievements.length > 0) {
+        const achievements = statsjson.playerstats.achievements
+        if(achievements && achievements.length > 0) {
+            this.achievements = achievements
             this.achievements_completed = this.achievements.reduce((memo, a) => {
                 if(a.achieved == 1){
                     memo += 1
@@ -26,6 +27,7 @@ module.exports = class Game {
                 console.warn(`Added achievements for another game. Expected: ${this.name}, but got ${statsjson.playerstats.gameName}`)
             }
         } else {
+            this.achievements = []
             this.achievements_completed = 0
             this.completion_score = 100
         }

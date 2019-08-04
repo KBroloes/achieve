@@ -30,10 +30,22 @@
                 <li class="page-item"><a class="page-link" href="#">Next</a></li>
             </ul>
         </nav>
+        <% var gamesList = games.games %>
+
+        <% if (gamesList.length == 0) { %>
+            <% if(games.unplayed.length == 0) {%>
+                <h4> No games found. Check your permissions </h4>
+            <% } else { %>
+            <% gamesList = games.unplayed %>
+                <h4> Only found games with no playtime.</h4>
+                <h5> Could not calculate full achievement scores and features are limited.</h5>
+                <small> If your games with playtime show up on this list, give permissions to your game playtime for full compatibility.</small>
+            <% } %>
+        <% } %>
 
         <div class="row">
-            <% for (var id in games.games) { %>
-            <% var game = games.games[id] %>
+            <% for (var id in gamesList) { %>
+            <% var game = gamesList[id] %>
                 <div class="col-md-4">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-header">

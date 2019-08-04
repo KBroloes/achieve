@@ -30,13 +30,18 @@ module.exports = class GameCache {
                         let needsUpdate = false
                         const fetched_game = userGames.games[key]
 
-                        if(!key in cached_games.games) {
+                        if(!(key in cached_games.games)) {
                             // This game has not been seen previously
                             needsUpdate = true
                         } else {
                             const cached_game = cached_games.games[key]
                             // Heuristic to update
-                            needsUpdate = cached_game.playtime_total < (fetched_game.playtime_total+1)
+                            if(!cached_game.playtime_total) {
+                                needsUpdate = isStale(cached_game.last_updated, 48)
+                            } else {
+                                needsUpdate = cached_game.playtime_total < (fetched_game.playtime_total)
+                            }
+
                         }
 
                         if(needsUpdate) {
@@ -99,20 +104,23 @@ module.exports = class GameCache {
     }
 }
 
-function isStale(update_time) {
-    let threshold = moment.utc(update_time).add(4, 'hours')
+function isStale(update_time, hours) {
+    let time = hours || 4
+    return true
+    let threshold = moment.utc(update_time).add(time, 'hours')
     return threshold.isBefore(moment.utc())
 }
 
 function asFilteredGamesList(gamesObject) {
     // Convert to array for filtering, sorting and representations
     let gamesList = Object.values(gamesObject.games)
-    played = gamesList.filter(game => game.achievements.length && game.playtime_total)
+    played = gamesList.filter(game => game.achievements && game.achievements.length && game.playtime_total)
     played.sort((x, y) => x.completion_score - y.completion_score)
 
     const newObj = {...gamesObject}
     newObj.games = played
-    newObj.unplayed = gamesList.filter(game => game.achievements.length && !game.playtime_total)
+    newObj.unplayed = gamesList.filter(game => game.achievements && game.achievements.length && !game.playtime_total)
+    newObj.unplayed.sort((x, y) => x.completion_score - y.completion_score)
 
     return newObj
 }
@@ -121,6 +129,9 @@ function getCompletionScore(gamesObject) {
     // Only count games with achievements that has been played
     const filtered = asFilteredGamesList(gamesObject).games
     const game_count = filtered.length
+    if(game_count == 0) {
+        return 0
+    }
 
     // TODO: Add better tests for integer coercion
     const total = filtered.reduce((reducer, game) => {

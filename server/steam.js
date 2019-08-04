@@ -25,7 +25,7 @@ class Player {
             const response = resp.data.response
 
             const gameMap = {}
-            response.games.slice(0,10).forEach((g) => {
+            response.games.forEach((g) => {
                 let game = new Game(g)
                 gameMap[game.id] = game
             })
