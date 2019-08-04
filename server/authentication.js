@@ -1,5 +1,6 @@
 const passport = require('passport')
 const SteamStrategy = require('passport-steam').Strategy
+const realm = process.env.realm || "http://localhost:3000/"
 
 function configure_authentication(app) {
     app.use(passport.initialize())
@@ -21,8 +22,8 @@ function configure_authentication(app) {
     })
 
     passport.use(new SteamStrategy({
-        returnURL: 'http://localhost:3000/auth/steam/return',
-        realm: 'http://localhost:3000/',
+        returnURL: realm + 'auth/steam/return',
+        realm: realm,
         apiKey: process.env.STEAM_API_KEY
       },
       (identifier, profile, done) => {
