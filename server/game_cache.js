@@ -6,18 +6,6 @@ module.exports = class GameCache {
         this.steam = new Steam(process.env.STEAM_API_KEY)
     }
 
-    _asFilteredGamesList(gamesObject) {
-        // Convert to array for filtering, sorting and representations
-        let gamesList = Object.values(gamesObject.games)
-        gamesList = gamesList.filter(game => game.achievements.length)
-        gamesList.sort((x, y) => x.completion_score - y.completion_score)
-
-        const newObj = {...gamesObject}
-        newObj.games = gamesList
-
-        return newObj
-    }
-
     async GetGamesFor(userId) {
         try {
             const cached_games = await this._getFromCache(userId)
@@ -37,6 +25,18 @@ module.exports = class GameCache {
             console.error("[Game Cache]", err)
             throw new Error(err)
         }
+    }
+
+    _asFilteredGamesList(gamesObject) {
+        // Convert to array for filtering, sorting and representations
+        let gamesList = Object.values(gamesObject.games)
+        gamesList = gamesList.filter(game => game.achievements.length)
+        gamesList.sort((x, y) => x.completion_score - y.completion_score)
+
+        const newObj = {...gamesObject}
+        newObj.games = gamesList
+
+        return newObj
     }
 
     async _commitToCache(userId, gamesObject) {
