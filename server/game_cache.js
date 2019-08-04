@@ -114,7 +114,7 @@ function isStale(update_time, hours) {
 function asFilteredGamesList(gamesObject) {
     // Convert to array for filtering, sorting and representations
     let gamesList = Object.values(gamesObject.games)
-    played = gamesList.filter(game => game.achievements && game.achievements.length && game.playtime_total)
+    played = gamesList.filter(game => game.achievements && game.achievements.length && game.playtime_total && game.playtime_total > 30)
     played.sort((x, y) => x.completion_score - y.completion_score)
 
     const newObj = {...gamesObject}
