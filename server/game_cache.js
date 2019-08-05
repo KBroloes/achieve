@@ -37,7 +37,7 @@ module.exports = class GameCache {
                         } else {
                             const cached_game = cached_games.games[key]
                             // Heuristic to update
-                            if(!cached_game.playtime_total) {
+                            if(!cached_game.playtime_total && !fetched_game.playtime_total) {
                                 needsUpdate = isStale(cached_game.last_updated, 48)
                             } else {
                                 needsUpdate = cached_game.playtime_total < (fetched_game.playtime_total)
